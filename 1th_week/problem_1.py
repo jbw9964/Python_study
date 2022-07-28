@@ -1,4 +1,6 @@
 
+# 풀이 변경 : brutal force
+
 import sys
 input = sys.stdin.readline
 
@@ -14,60 +16,19 @@ while True :
         List.pop()
     else : break
 
-# for value in List : 
-#     print(value, end=' ')
-# print()
-
-D = [[0 for i in range(len(List))] for i in range(3)]
-
-for i, v in enumerate(List) : 
-    D[0][i] = [v, i]
-
-
-for j in range(len(List)) : 
+temp_max = 0
+for i in range(len(List) - 1, 1, -1) : 
     
-    for k in range(len(List) - 1, -1, -1) : 
-        if k == j : continue
-        if D[0][k][0] + List[j] <= T : 
-            D[1][j] = [List[j] + D[0][k][0], {j, k}]
-            break
-
-D[1].sort()
-
-for j in range(len(List)) : 
-    
-    for k in range(len(List) - 1, -1, -1) : 
+    target = T - List[i]
+    for j in range(i - 1, 0, -1) : 
         
-        if j in D[1][k][1] : continue
-        if D[1][k][0] + List[j] <= T : 
-            D[2][j] = List[j] + D[1][k][0]
-            break
+        if target - List[j] > 0 : 
+            temp_target = target - List[j]
 
-print(max(D[2]))
-
-
-
-
-# for i in range(1, 3) : 
-    
-#     for j in range(len(List)) : 
-        
-#         temp_max = 0
-#         for k in range(len(List), -1, -1) : 
-#             if k == j : continue
-#             if D[i - 1][k] + List[j] <= T : 
-#                 D[i][j] = [List[j] + D[i - 1][k], ]
+            for k in range(j - 1, -1, -1) : 
                 
+                if List[k] <= temp_target : 
+                    temp_max = max(List[i] + List[j] + List[k], temp_max)
+                    break
                 
-#                 break
-        
-#         D[i] += temp_max
-    
-#     D.sort()
-    
-    
-#     pass
-
-
-
-
+print(temp_max)
