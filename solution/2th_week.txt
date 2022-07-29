@@ -4,10 +4,137 @@
 
 [해결 방안] : Breadth first search
 
+문제에서 주어진 대로 진행하면 된다. 입력된 배열의 Root Node 와 그 자식들을 비교해
+입력된 배열이 Min heap 일지, Max heap 일지 판별한다. 
+또한 List 내 숫자들에 대한 index 값 지정을 편하게 하기 위해, List 의 첫번째에 빈 숫자를 넣어준다.
+
+List.insert(0, 0)
+
+Min_heap = False
+Max_heap = False
+
+if List[1] <= List[2] and List[1] <= List[3]: Min_heap = True
+else : Max_heap = True
+
+편의를 위해 Length 와 index_count 를 초기화 해주고 while 문을 돌린다.
+
+지금 방문한 Node 의 값을 Parent 로 초기화 해준다.
+또한 방문한 Node 에 자식이 존재하지 않는다면, 더이상 확인할 필요가 없으므로 while 문을 break 해준다.
+
+(오른쪽 자식 : 2 * index_count + 1 / 왼쪽 자식 : 2 * index_count)
+
+if 2 * index_count + 1 > Length and 2 * index_count > Length : break
+Parent = List[index_count]
+
+이제 Parent 의 자식을 지정해준다. 위의 조건에서 자식이 모두 없는 경우는 배제되지만,
+자식이 하나만 (왼쪽 자식만 있을 경우. 힙은 완전 이진 트리이므로 오른쪽 자식만 잇는 경우는 없다.) 존재할 경우가 있으므로 이를 구현해준다.
+
+Child = []
+Child.append(List[2 * index_count])
+if not 2 * index_count + 1 > Length : 
+    Child.append(List[2 * index_count + 1])
+
+이제 위 Child 값들을 Parent 값과 비교한다.
+Min_heap 배열이여야 하는데 Parent > child 인 경우, Max_heap 배열이여야 하는데 Parent < child 인 경우는
+힙 배열이 아닌 경우이므로 더이상 확인하지 않고 while 문을 중단한다.
+
+for child in Child : 
+        
+        if Min_heap and child < Parent : 
+            Min_heap = False
+            break
+        
+        elif Max_heap and child > Parent : 
+            Max_heap = False
+            break
+        
+if not Min_heap and not Max_heap : break
+index_count += 1
+
+while 문을 탈출하면 해당 배열이 무엇인지 판명난 상태이므로 이에 맞게 출력한다.
 
 
 문제 2 : 주차장 문제 - 주어진 주차장에 주차하게될 공간을 나타내어라
 
 [해결 방안] : Breadth first search
 
+문제의 상황은 크게 두가지로 나눌 수 있다.
+주차장 내에 여유로운 공간이 있는 경우, 그렇지 않고 출구와 가장 가까운 곳에 주차하는 경우이다.
+문제에서 여유로운 공간이 다수 존재한다면 출구에서 가장 가까운 곳에 주차하라 하였으므로,
+결국 입구보다 출구를 중심으로 탐색을 돌리는 것이 현명해 보인다.
 
+만약 해당 입력에서 깊이우선 탐색을 진행한다면, 출구와의 거리에 대해 따로 처리를 진행해야 하므로
+편의를 위해 너비우선 탐색을 진행하였다.
+
+방문한 Node 에서 진행할 수 있는 도로를 저장할 Queue, 근처에 주차할 수 있는 공간을 저장할 parking_queue 를 만들었다.
+또한 Node 들의 방문 여부를 저장할 Visit_table 을 만들었다. 또한 출구에서 탐색을 진행할 것이므로
+Queue 에 [N - 1, N - 1], 출구의 index 를 넣었다.
+
+Queue = deque()
+parking_queue = deque()
+Queue.append([N - 1, N - 1])
+
+Visit_table = [[False for _ in range(N)] for _ in range(N)]
+
+이제 while 문을 돌리며 Queue 를 pop 한다. Queue 에서 나온 Node 를 방문처리 하고
+해당 Node 의 상하좌우 Node 를 검사한다.
+
+while Queue : 
+    R, C = Queue.popleft()
+    Visit_table[R][C] = True
+
+    for r, c in ([R-1,C],[R+1,C],[R,C-1],[R,C+1]) : 
+
+만약 Node 의 상하좌우 Node 중 입력 범위를 넘어간다면 이를 무시하고, 
+Node 의 값이 0 이면 이는 도로이므로 Queue 에, 1 이라면 주차공간 이므로 parking_queue 에 저장한다.
+편의를 위해 parking_queue 에 저장하면서 방문 처리를 동시에 해준다.
+
+        if not (0<=r<N and 0<=c<N) : continue
+
+        if G[r][c] == 0 and not Visit_table[r][c] : 
+            Queue.append([r, c])
+        elif G[r][c] == 1 and not Visit_table[r][c] : 
+            Visit_table[r][c] = True
+            parking_queue.append([r, c])
+
+
+while 문을 탈출했다면 parking_queue 에는 도로에서 접근 가능한 모든 주차공간이 저장되어 있다.
+
+만약 주차가능 공간 중 여유로운 공간이 없다면 출구에서 가장 가까운 곳을 나타내어야 한다.
+그런데 우리는 너비우선 탐색을 진행하였으므로, 출구에서 가장 가까운 주차공간은 parking_queue[0] 에 저장되어 있음을 알 수 있다.
+따라서 답을 출력할 Result 에 편의를 위해 parking_queue[0] 값을 초기화 시켜 둔다.
+
+Result = [parking_queue[0][0], parking_queue[0][1]]
+
+이제 주차 가능한 공간 중 여유로운 공간이 있는지 확인해야 한다. 이 때 여유로운 공간이 다수 존재하면
+출구에서 가장 가까운 곳을 나타내어야 되므로 parking_queue 를 pop 시키며 진행한다.
+
+while parking_queue : 
+    R, C = parking_queue.popleft()
+
+만약 pop 된 공간에서 상,하 또는 좌,우 모두 주차 가능하다면 이 공간은 여유로운 공간이므로,
+Result 를 해당 공간으로 초기화 시켜주고 while 문을 중지시킨다.
+
+    count = 0
+    for r, c in ([R+1,C],[R-1,C]) :             # 아래,위
+        
+        if not (0<=r<N and 0<=c<N) : continue
+        
+        if G[r][c] == 1 : count += 1
+
+    if count == 2 : 
+        Result = [R, C]
+        break
+
+    count = 0
+    for r, c in ([R,C+1],[R,C-1]) :             # 오른,왼
+        
+        if not (0<=r<N and 0<=c<N) : continue
+        
+        if G[r][c] == 1 : count += 1
+    
+    if count == 2 : 
+        Result = [R, C]
+        break
+
+결국 Result 에는 조건에 부합하는 정답이 들어있으므로, 출력 형태에 맞게 나타내면 된다.
