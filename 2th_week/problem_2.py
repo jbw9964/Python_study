@@ -21,7 +21,7 @@ while Queue :
     R, C = Queue.popleft()
     Visit_table[R][C] = True
 
-    for r, c in ([R+1,C],[R-1,C],[R,C+1],[R,C-1]) :     # 아래,위,오른,왼
+    for r, c in ([R-1,C],[R+1,C],[R,C-1],[R,C+1]) :     # 위,아래,왼,오른
         
         if not (0<=r<N and 0<=c<N) : continue
 
@@ -36,7 +36,7 @@ while parking_queue :
     R, C = parking_queue.popleft()
 
     count = 0
-    for r, c in ([R+1,C],[R-1,C]) :             # 아래,위
+    for r, c in ([R-1,C],[R+1,C]) :             # 위,아래
         
         if not (0<=r<N and 0<=c<N) : continue
         
@@ -47,7 +47,7 @@ while parking_queue :
         break
 
     count = 0
-    for r, c in ([R,C+1],[R,C-1]) :             # 오른,왼
+    for r, c in ([R,C-1],[R,C+1]) :             # 왼,오른
         
         if not (0<=r<N and 0<=c<N) : continue
         
