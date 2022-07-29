@@ -1,5 +1,5 @@
 
-from infix_to_postfix import infix_to_postfix_fun
+from infix_to_postfix_re import infix_to_postfix_fun
 
 N = int(input())
 
@@ -32,12 +32,12 @@ for i in range(N) :
     Result.append(postfix_calc_fun(Postfix[i]))
 
 print()
-# for i in range(N) : 
-#     current = Postfix[i]
+for i in range(N) : 
+    current = Postfix[i]
 
-#     for string in current : 
-#         print(string, end=' ')
-#     print()
+    for string in current : 
+        print(string, end=' ')
+    print()
 for value in Result : 
     if type(value) == int : print(value)
     else : print(f"{value:.3f}")
