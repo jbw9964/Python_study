@@ -7,10 +7,10 @@ D[2] = [1, 2, 1]
 
 for i in range(3, N + 1) : 
 
-    D[i] = [v for v in D[i - 1]]
-    D[i].append(i)
+    D[i] = [v for v in D[i - 1]]        # N - 1 층 옮김
+    D[i].append(i)                      # N 층 옮김
     
-    for sequence in D[i - 1] : 
+    for sequence in D[i - 1] :          # N - 1 층 다시 옮김
         D[i].append(sequence)
 
 for i, v in enumerate(D[N]) : 
