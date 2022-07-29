@@ -9,7 +9,6 @@ heapq._heapify_max(temp)
 
 import time
 
-from collections import deque
 import sys
 input = sys.stdin.readline
 

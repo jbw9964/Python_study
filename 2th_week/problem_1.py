@@ -1,42 +1,34 @@
 
 # from random import *
 # import heapq
-# list = [0]
-# for i in range(1000) : 
-#     value = randint(1, 100)
-#     list.append(value)
-#     pass
 
-# heapq.heapify(list)
-# print(list)
-# # heapq._heapify_max(list)
+# temp = []
+# for i in range(100) : 
+#     temp.append(randint(1, 100))
+# heapq._heapify_max(temp)
 
 import time
 
-from collections import deque
 import sys
 input = sys.stdin.readline
 
 List = list(map(int, input().split()))
+# List = temp
 start = time.time()
 List.insert(0, 0)
-
-# List = list
 
 Min_heap = False
 Max_heap = False
 
-if List[1] < List[2] : Min_heap = True
+if List[1] <= List[2] and List[1] <= List[3]: Min_heap = True
 else : Max_heap = True
 
-Queue = deque()
-Queue.append(List[1])
 Length = len(List) - 1
 index_count = 1
 while True : 
     if 2 * index_count + 1 > Length and 2 * index_count > Length : break
-    
-    Parent = Queue.popleft()
+
+    Parent = List[index_count]
 
     Child = []
     Child.append(List[2 * index_count])
@@ -45,19 +37,16 @@ while True :
 
     for child in Child : 
         
-        if Min_heap : 
-            if child > Parent : 
-                Queue.append(child)
-            else : Min_heap = False
-
-        else : 
-            if child < Parent : 
-                Queue.append(child)
-            else : Max_heap = False
+        if Min_heap and child < Parent : 
+            Min_heap = False
+            break
+        
+        elif Max_heap and child > Parent : 
+            Max_heap = False
+            break
         
     if not Min_heap and not Max_heap : break
     index_count += 1
-
 
 if not Min_heap and not Max_heap : 
     print(-1)
