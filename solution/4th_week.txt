@@ -160,5 +160,79 @@ def postfix_calc_fun(Postfix : list) -> int :
 
 [해결 방안] : Depth first search
 
+문제를 보면 주어진 그래프는 방향 그래프 (Digraph) 인 것을 알 수 있다.
+무방향 그래프인 경우 union-find 방식으로 그래프의 사이클을 참지할 수 있지만 방향 그래프는 
+이를 적용할 수 없다. 대신 깊이우선 탐색을 통해 사이클을 탐지할 수 있다.
 
+다음과 같은 방향 그래프에서 깊이 우선 탐색을 진행하여 보자.
 
+(A)                             (B)
+(1) --> (2) --> (3)             (1) --> (2) --> (3)
+         ↓       ↑                       ↑       ↓
+         ↓       ↑                       ↑       ↓
+        (4) --> (5)                     (4) <-- (5)
+
+(1) Node 에서 깊이 우선 탐색을 진행해 보면, A 는 (1)-(2)-(3)-(4)-(5)-(3) 순으로 진행하고
+B 는 (1)-(2)-(3)-(5)-(4)-(2)-... 로 진행한다. 이 때 A 의 (3) Node 와 B 의 (2) Node 를 주목하라.
+
+B 에는 사이클이 존재하여 (2) Node 를 2번 이상 방문하였다. 하지만 A 에는 사이클이 존재하지 않음에도 불구하고,
+방향 그래프와 깊이우선 탐색의 성질 때문에 (3) Node 를 2번 방문하였다.
+위 두 상황을 구별하는것은 매우 중요하다.
+
+때문에 이를 구별하기 위한 Process_table 을 만들었다.
+사이클이 존재한다면 깊이우선 탐색이 행해지는 도중에 방문했던 정점을 다시 방문해야 한다.
+이를 다음과 같이 구현하였다.
+
+#====================================================================================================#
+for V in range(N) : 
+    
+    Visit_table = [False for i in range(N)]
+    Process_table = [False for i in range(N)]
+    
+    Cycle = DFS(Visit_table, Process_table, E, V, N)
+    
+    if Cycle == 1 : break
+
+def DFS(Visit_table : list, Process_table : list, E : list, V : int, N : int) -> int : 
+    
+    if Visit_table[V] and Process_table[V] : return True
+
+    Visit_table[V] = True
+    Process_table[V] = True
+    Result = False
+    for i in range(N) : 
+        if E[V][i] == 1 : 
+            Result = DFS(Visit_table, Process_table, E, i, N)
+            Visit_table[i] = False
+            Process_table[i] = False
+    
+    return Result
+#====================================================================================================#
+
+각 정점마다 Visit_table, Process_table 을 초기화시켰고 깊이우선 탐색을 진행해 사이클이 존재하는지 확인하였다.
+
+깊이우선 탐색이 행해진 정점은 아래와 같이 초기화 하여 방문여부와 깊이우선 탐색 실행 여부를 저장하였다.
+
+Visit_table[V] = True
+Process_table[V] = True
+
+그리고 인접한 정점에 대해서도 깊이우선 탐색을 진행하였다.
+
+Result = False
+for i in range(N) : 
+    if E[V][i] == 1 : 
+        Result = DFS(Visit_table, Process_table, E, i, N)
+
+이 때 만약 방문했던 정점을 다시 방문하고, 해당 정점에 대해서 깊이우선 탐색이 진행중이었다면,
+그래프 내부에 사이클이 존재하는 것이므로 True 리턴하였다.
+
+if Visit_table[V] and Process_table[V] : return True
+
+이를 진행하면 결국 그래프에 사이클이 존재한다면 Result = True, 그렇지 않다면 Result = False 로 초기화된다.
+또한 Result = DFS(Visit_table, Process_table, E, i, N) 를 지나면
+해당 정점에 대해서 깊이우선 탐색이 끝난 것 이므로 아래와 같이 Process_table 을 다시 초기화 시켜준다.
+
+        Visit_table[i] = False
+        Process_table[i] = False
+
+이를 각 정점에 대해 진행하면 사이클 존재 여부를 알 수 있다.
