@@ -1,0 +1,37 @@
+
+Greedy 2 : 줄다리기 문제 - 가장 비등하게 승부가 나도록 팀을 나누어라
+
+[해결 방안] : sort
+
+주어진 입력을 편의를 위해 다음처럼 저장하였다.
+
+List = list(map(int, input().split()))
+List = [[i, v] for i, v in enumerate(List, 1)]
+
+이러면 각 학생의 번호와 힘을 모두 저장할 수 있다.
+위 배열을 sorted 메소드와 lamdba 함수를 이용해 힘의 크기 순으로 내림차순 정렬을 하였다.
+
+List = sorted(List, key=lambda x : x[1], reverse=True)
+
+정렬 후 각 학생들을 넣어둘 Team_1 과 Team_2 를 지정하였고, 두 팀의 힘을 나타낼 sum_1 과 sum_2 를 지정하였다.
+
+Team_1 = []
+Team_2 = []
+
+sum_1 = 0
+sum_2 = 0
+
+이제 List 에서 한 학생씩 팀에 넣는다. 넣으면서 학생의 힘만큼 해당 팀의 sum 값을 높인다.
+만약 sum_2 > sum_1 이라면 Team_1 에 학생을 넣고, 그렇지 않다면 Team_2 에 넣는다.
+
+for student, power in List : 
+    
+    if sum_1 < sum_2 : 
+        sum_1 += power
+        Team_1.append(student)
+        
+    else : 
+        sum_2 += power
+        Team_2.append(student)
+
+모든 학생들을 팀에 넣은 후, 문제의 조건에 따라 알맞게 출력하면 된다.
